@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <title>Catalogo de libros</title>
+  </head>
+  <body>
+    <nav class="navbar is-link" aria-expanded="false">
+        <!-- navbar brand, navbar menu... -->
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="crearAutor.html">
+                    Autor
+                </a>
+
+                <a class="navbar-item" href="CrearEditorial.html">
+                    Editorial
+                </a>
+        
+                <a class="navbar-item" href="crearGenero.html">
+                    Género
+                </a>
+
+                <a class="navbar-item" href="crearFavorito.html">
+                    Favoritos
+                </a>
+        
+            </div>
+        </div>
+    </nav>
+        <div class="is-flex  is-justify-content-space-between my-3">
+            <div>
+
+            </div>
+
+            <div>
+                <a class="button is-link is-outlined is-rounded" href="CrearLibro.html"> Registrar libro</a>
+                <a class="button is-link is-outlined is-rounded" href="editarLibro.html"> Editar libro</a>
+            </div>
+        </div>
+        <section class="">
+            <div class="hero-body">
+                <div class="container">
+                    <div class="columns is-centered">
+                    <div class="column">
+                            <div class="field" id="resultado">
+                                <table class="table is-striped is-fullwidth">
+                                    <thead>
+                                      <tr>
+                                        <th><abbr title="id_libro">Id</abbr></th>
+                                        <th><abbr title="titulo_libro">Título del libro</th>
+                                        <th><abbr title="fecha_publicacion">Fecha de publicación</abbr></th>
+                                        <th><abbr title="numero_paginas">No. de páginas</abbr></th>
+                                        <th><abbr title="formato">Formato</abbr></th>
+                                        <th><abbr title="id_editorial">Editorial</abbr></th>
+                                        <th><abbr title="id_genero">Género</abbr></th>
+                                        <th><abbr title="id_autor">Autor</abbr></th>
+                                        <th></th>
+                                        <th></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody id="catalogo">
+                                        
+                                    </tbody>
+                                    <tfoot>
+                                      <tr>
+                                      </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script async type="text/Javascript">
+            function handleSubmit(){
+               let req = new XMLHttpRequest();
+                req.open('GET', 'http://localhost:5000/menu')
+                req.setRequestHeader('Content-type', 'application/json')
+                req.onload=function(){
+                    let arrayBuffer = JSON.parse(req.response);
+                    console.log(arrayBuffer)
+                    let tbody = document.querySelector("#catalogo")
+
+
+                    Object.values(arrayBuffer).forEach(element => {
+                        let td_id = document.createElement('td')
+                        console.log(element)
+                        let td_titulo = document.createElement('td')
+                        let td_fech = document.createElement('td')
+                        let td_nopag = document.createElement('td')
+                        let td_form = document.createElement('td')
+                        let td_nombre_ed = document.createElement('td')
+                        let td_nombre_gen = document.createElement('td')
+                        let td_nombre_aut = document.createElement('td')
+                        let editar = document.createElement('td')
+                        let eliminar = document.createElement('td')
+                        td_id.innerHTML = element.id_libro
+                        td_titulo.innerHTML = element.titulo_libro
+                        td_fech.innerHTML = element.fecha_publicacion
+                        td_nopag.innerHTML = element.numero_paginas
+                        td_form.innerHTML = element.formato
+                        td_nombre_ed.innerHTML = element.nombre_editorial
+                        td_nombre_gen.innerHTML = element.nombre_genero
+                        td_nombre_aut.innerHTML = element.nombre_autor
+                        // editar.innerHTML = '<a href="http://localhost:5000/editarLibro/' + element.id_libro + '">Editar</a>'
+                        eliminar.innerHTML = `<button onClick="eliminarLibro(${element.id_libro})"}>Eliminar</button>`
+                        
+
+                        let tr_tr = document.createElement('tr')
+                        tr_tr.appendChild(td_id)
+                        tr_tr.appendChild(td_titulo)
+                        tr_tr.appendChild(td_fech)
+                        tr_tr.appendChild(td_nopag)
+                        tr_tr.appendChild(td_form)
+                        tr_tr.appendChild(td_nombre_ed)
+                        tr_tr.appendChild(td_nombre_gen)
+                        tr_tr.appendChild(td_nombre_aut)
+                        tr_tr.appendChild(editar)
+                        tr_tr.appendChild(eliminar)
+
+
+                        tbody.appendChild(tr_tr)
+                    })
+                   
+                }
+
+                req.send(null);
+            } handleSubmit()
+
+
+            
+        function eliminarLibro(id_Libro) {
+            console.log(id_Libro)
+            let req_delete = new XMLHttpRequest();
+            req_delete.open('DELETE', 'http://localhost:5000/eliminarLibro/' + id_Libro);
+            req_delete.setRequestHeader('Content-Type', 'application/json');
+
+            req_delete.onload = function(event){
+                let arrayBuffer_delete = req_delete.response;
+                if(req_delete.status == 200){
+                    console.log(arrayBuffer_delete);
+                    document.querySelector('#resultado').innerHTML = arrayBuffer_delete;
+                    setTimeout(() => {
+                        window.location.assign('menu.html');
+                    }, 2000);
+                }
+            }
+            req_delete.send(null); 
+        }
+        </script>
+        </section>
+        
+    </body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <title>Editar-Libro</title>
+  </head>
+  <body>
+        <section class="hero is-link is-fullheight">
+            <div class="hero-body">
+                <div class="container">
+                    <div class="columns is-centered">
+                    <div class="column">
+                        <form method="post" class="box" onsubmit="handleSubmit(event);">
+                            <div class="field">
+                                <label for="" class="label">Libro</label>
+                                <div class="select is-link is-rounded">
+                                    <select title="libro" name="libro" id="select_libro" onchange="inputs_libro(event)">
+                                      <option>Seleccionar libro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Título</label>
+                                <div class="control has-icons-left">
+                                <input name="tituloLibro" id="tituloLibro" type="text" placeholder="" class="input is-link is-rounded" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Fecha de publicación</label>
+                                <div class="control has-icons-left">
+                                <input name="fechapubLibro" id="fechapubLibro" type="date" placeholder="" class="input is-link is-rounded" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">No. de páginas</label>
+                                <div class="control has-icons-left">
+                                <input name="nopagLibro" id="nopagLibro" type="integer" placeholder="" class="input is-link is-rounded" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Formato</label>
+                                <div class="control has-icons-left">
+                                <input name="formatoLibro" id="formatoLibro" type="text" placeholder="" class="input is-link is-rounded" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Editorial</label>
+                                <div class="select is-link is-rounded">
+                                    <select title="editorial" name="editorial" id="select_editorial">
+                                      <option>Seleccionar editorial</option>
+                                    </select>
+                                  </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Género</label>
+                                <div class="select is-link is-rounded">
+                                    <select title="genero" name="genero" id="select_genero">
+                                      <option>Seleccionar género</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="" class="label">Autor</label>
+                                <div class="select is-link is-rounded">
+                                    <select title="autor" name="autor" id="select_autor">
+                                      <option>Seleccionar autor</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <button class="button is-link is-rounded">
+                                Modificar libro
+                                </button>
+                            </div>
+                            <div class="field" id="resultado">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+        <script async type="text/Javascript">
+
+            function make_req(){
+                let req = new XMLHttpRequest();
+                req.open('GET', 'http://localhost:5000/consultarSelect')
+                req.onload=function(){
+                    let arrayBuffer = JSON.parse(req.response);
+
+                    editoriales = arrayBuffer.editoriales
+                    generos = arrayBuffer.generos
+                    autores = arrayBuffer.autores
+
+
+                    console.table(arrayBuffer);
+                    console.log(typeof arrayBuffer);
+                    console.table(generos);
+
+                    selectEditorial = document.querySelector('#select_editorial')
+                    selectGenero = document.querySelector('#select_genero')
+                    selectAutor = document.querySelector('#select_autor')
+
+
+                    Object.values(editoriales).forEach(element => {
+                        let option_select = document.createElement('option')
+                        option_select.value = element.id
+                        option_select.innerHTML = element.nombre
+                        selectEditorial.appendChild(option_select)
+                    })
+
+                    Object.values(generos).forEach(element => {
+                        let option_select = document.createElement('option')
+                        option_select.value = element.id
+                        option_select.innerHTML = element.nombre
+                        selectGenero.appendChild(option_select)
+                    })
+
+                    Object.values(autores).forEach(element => {
+                        let option_select = document.createElement('option')
+                        option_select.value = element.id
+                        option_select.innerHTML = element.nombre
+                        selectAutor.appendChild(option_select)
+                    })
+
+                } 
+                
+                req.send(null)
+
+            } make_req()
+
+            // TRAER LOS DATOS DEL LIBRO
+            function select_libro() {
+                let req = new XMLHttpRequest();
+                req.open('GET', 'http://localhost:5000/menu')
+                req.setRequestHeader('Content-type', 'application/json')
+                req.onload=function() {
+                    let arrayBuffer = JSON.parse(req.response);
+                    let select_libro = document.querySelector('#select_libro')
+                    console.log(arrayBuffer)
+                    Object.values(arrayBuffer).forEach(element => {
+                        let option = document.createElement('option')
+                        option.value = element.id_libro
+                        option.innerHTML = element.titulo_libro
+                        select_libro.appendChild(option)
+
+                    });
+
+                    
+                    
+                }
+                req.send(null)
+
+            }   
+
+            select_libro()
+
+
+            // TRAER INFORMACION DE LOS LIBROS
+            function inputs_libro(event) {
+                let req = new XMLHttpRequest();
+                let id_libro = event.target.value;
+                req.open('GET', 'http://localhost:5000/obtenerLibro/' + id_libro)
+                req.onload=function() {
+                    let arrayBuffer = JSON.parse(req.response);
+                    
+                    document.querySelector('#tituloLibro').value = arrayBuffer.titulo_libro
+                    document.querySelector('#fechapubLibro').value = arrayBuffer.fecha_publicacion
+                    document.querySelector('#nopagLibro').value = arrayBuffer.numero_paginas
+                    document.querySelector('#formatoLibro').value = arrayBuffer.formato
+                    document.querySelector('#select_genero').value = arrayBuffer.id_genero
+                    document.querySelector('#select_editorial').value = arrayBuffer.id_editorial
+                    document.querySelector('#select_autor').value = arrayBuffer.id_autor                    
+                }
+                req.send(null)
+
+            }   
+
+            // inputs_libro()
+
+
+            // ENVIAR FORMULARIO PARA EDITAR LIBRO
+            function handleSubmit(event){
+                event.preventDefault(); // REDIRECCIONAR AHI MISMO
+                let formData = new FormData(event.target);
+                let object = {};
+                console.log(formData)
+
+                formData.forEach(function(value,key){
+                    object[key] = value;
+                });
+
+                async function makeReq(){
+                    let req = new XMLHttpRequest();
+                    req.open('PATCH', 'http://localhost:5000/editarLibro')
+                    req.setRequestHeader('Content-type', 'application/json')
+                    req.onload=function(event){
+                        let arrayBuffer = req.response;
+                        console.log(arrayBuffer)
+                        document.querySelector('#resultado').innerHTML=arrayBuffer;
+                    
+
+                    setTimeout(function(){
+                        window.location.assign('menu.html');
+                    },2000)
+
+                }
+                
+                    req.send(JSON.stringify(object));
+                }
+
+                makeReq();
+            } 
+            // handleSubmit()
+        </script>
+ </body>
+</html>
